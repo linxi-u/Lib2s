@@ -4,7 +4,179 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>单文件分析 - BinaryAI风格模仿</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ----- 全局样式 ----- */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ----- 头部导航 ----- */
+        header {
+            background-color: #fff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-bottom: 1px solid #eaeef2;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a73e8;
+        }
+
+        .task-bar {
+            background-color: #e8f0fe;
+            padding: 6px 16px;
+            border-radius: 20px;
+            color: #1a73e8;
+            font-size: 0.9rem;
+        }
+
+        /* ----- 主内容区域 ----- */
+        main {
+            flex: 1;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .upload-area {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .upload-card {
+            flex: 1 1 400px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e0e5eb;
+        }
+
+        .upload-card h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-weight: 500;
+            border-bottom: 1px solid #eaeef2;
+            padding-bottom: 15px;
+        }
+
+        /* 拖拽上传区 */
+        .drop-zone {
+            background-color: #fafbfc;
+            border: 2px dashed #b6c8d9;
+            border-radius: 10px;
+            padding: 50px 20px;
+            text-align: center;
+            color: #5f7d9c;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: #1a73e8;
+            background-color: #eef4ff;
+            color: #1a73e8;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            margin: 5px 0 0;
+            color: #8899aa;
+        }
+
+        /* 显示已选文件名 */
+        .file-name {
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: #1a73e8;
+            text-align: center;
+            word-break: break-all;
+            min-height: 24px;
+        }
+
+        /* 底部操作区 */
+        .action-area {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .analyze-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px 36px;
+            font-size: 1.1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(26,115,232,0.3);
+            transition: background-color 0.2s;
+        }
+
+        .analyze-btn:hover {
+            background-color: #1557b0;
+        }
+
+        .progress-container {
+            margin-top: 25px;
+            width: 80%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 18px;
+            background-color: #e0e5eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #1a73e8;
+            transition: width 0.1s linear;
+        }
+
+        .result-message {
+            margin-top: 20px;
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+
+        /* 底部协议信息 */
+        .info-footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #8899aa;
+            font-size: 0.85rem;
+        }
+
+        .info-footer a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+
+        .info-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -13,16 +185,16 @@
     </header>
 
     <main>
+        <!-- 双文件上传区域 -->
         <section class="upload-area">
             <div class="upload-card">
                 <h2>主文件</h2>
                 <div class="drop-zone" id="mainFileZone">
-                <div class="file-name" id="mainFileName"></div>
-                <div class="file-name" id="compareFileName"></div>
                     <p>点击或拖拽至此区域上传</p>
                     <p class="hint">支持ELF、PE、Mach-O等类型的二进制文件</p>
                     <p class="hint">文件大小不超过20M</p>
                 </div>
+                <div class="file-name" id="mainFileName"></div>
             </div>
             <div class="upload-card">
                 <h2>比对内容</h2>
@@ -31,21 +203,139 @@
                     <p class="hint">支持ELF、PE、Mach-O等类型的二进制文件</p>
                     <p class="hint">文件大小不超过20M</p>
                 </div>
+                <div class="file-name" id="compareFileName"></div>
             </div>
         </section>
+
+        <!-- 分析操作区 -->
         <div class="action-area">
-    <button class="analyze-btn" id="analyzeBtn">开始分析</button>
-    <div class="progress-container" id="progressContainer" style="display: none;">
-        <div class="progress-bar" id="progressBar"></div>
-    </div>
-    <div class="result-message" id="resultMessage"></div>
-</div>
+            <button class="analyze-btn" id="analyzeBtn">开始分析</button>
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="result-message" id="resultMessage"></div>
+        </div>
+
+        <!-- 底部说明 -->
         <section class="info-footer">
             <p>Copyright © 2026 模仿项目. 请勿上传个人信息。</p>
-            <!-- 实际项目中应替换为真实协议链接 -->
             <p>如您提交上述信息，则视为您同意本<a href="#">软件许可及服务协议</a>和<a href="#">隐私保护协议</a>。</p>
         </section>
     </main>
-    <script src="script.js"></script>
+
+    <script>
+        (function() {
+            "use strict";
+
+            // 获取DOM元素
+            const mainFileZone = document.getElementById('mainFileZone');
+            const compareFileZone = document.getElementById('compareFileZone');
+            const mainFileNameDiv = document.getElementById('mainFileName');
+            const compareFileNameDiv = document.getElementById('compareFileName');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const resultMessage = document.getElementById('resultMessage');
+
+            // 存储选中的文件
+            const mainFileStorage = { file: null };
+            const compareFileStorage = { file: null };
+
+            // 封装上传区域逻辑
+            function setupDropZone(zoneElement, fileNameDisplayElement, fileStorage) {
+                // 更新文件名的辅助函数
+                function updateFileDisplay(file) {
+                    if (file) {
+                        fileNameDisplayElement.textContent = `已选择: ${file.name}`;
+                        fileStorage.file = file;
+                    } else {
+                        fileNameDisplayElement.textContent = '';
+                        fileStorage.file = null;
+                    }
+                }
+
+                // 点击事件：创建隐藏input选择文件
+                zoneElement.addEventListener('click', function() {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.onchange = function(e) {
+                        const file = e.target.files[0];
+                        updateFileDisplay(file || null);
+                    };
+                    input.click();
+                });
+
+                // 拖拽高亮效果
+                zoneElement.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    zoneElement.classList.add('drag-over');
+                });
+
+                zoneElement.addEventListener('dragleave', function() {
+                    zoneElement.classList.remove('drag-over');
+                });
+
+                // 拖拽放置文件
+                zoneElement.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    zoneElement.classList.remove('drag-over');
+                    const file = e.dataTransfer.files[0];
+                    updateFileDisplay(file || null);
+                });
+            }
+
+            // 初始化两个上传区
+            setupDropZone(mainFileZone, mainFileNameDiv, mainFileStorage);
+            setupDropZone(compareFileZone, compareFileNameDiv, compareFileStorage);
+
+            // 模拟分析进度
+            let progressInterval = null;
+
+            function startMockAnalysis() {
+                // 清除之前的计时器和结果
+                if (progressInterval) {
+                    clearInterval(progressInterval);
+                }
+                resultMessage.textContent = '';
+                progressContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+
+                let width = 0;
+                progressInterval = setInterval(function() {
+                    if (width >= 100) {
+                        clearInterval(progressInterval);
+                        progressInterval = null;
+                        progressContainer.style.display = 'none';
+
+                        // 构建结果文本
+                        let message = `分析完成！主文件：${mainFileStorage.file.name}`;
+                        if (compareFileStorage.file) {
+                            message += `，比对文件：${compareFileStorage.file.name}`;
+                        }
+                        resultMessage.textContent = message;
+                    } else {
+                        width += 2; // 每次增加2%，模拟流畅进度
+                        progressBar.style.width = width + '%';
+                    }
+                }, 50);
+            }
+
+            // 分析按钮点击事件
+            analyzeBtn.addEventListener('click', function() {
+                if (!mainFileStorage.file) {
+                    alert('请先上传主文件');
+                    return;
+                }
+
+                // 如果已经有进度在进行，先清除再开始新的
+                if (progressInterval) {
+                    clearInterval(progressInterval);
+                    progressInterval = null;
+                }
+                startMockAnalysis();
+            });
+
+        })();
+    </script>
 </body>
 </html>
