@@ -17,6 +17,8 @@
             <div class="upload-card">
                 <h2>主文件</h2>
                 <div class="drop-zone" id="mainFileZone">
+                <div class="file-name" id="mainFileName"></div>
+                <div class="file-name" id="compareFileName"></div>
                     <p>点击或拖拽至此区域上传</p>
                     <p class="hint">支持ELF、PE、Mach-O等类型的二进制文件</p>
                     <p class="hint">文件大小不超过20M</p>
@@ -31,6 +33,13 @@
                 </div>
             </div>
         </section>
+        <div class="action-area">
+    <button class="analyze-btn" id="analyzeBtn">开始分析</button>
+    <div class="progress-container" id="progressContainer" style="display: none;">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="result-message" id="resultMessage"></div>
+</div>
         <section class="info-footer">
             <p>Copyright © 2026 模仿项目. 请勿上传个人信息。</p>
             <!-- 实际项目中应替换为真实协议链接 -->
