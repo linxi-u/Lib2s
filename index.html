@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单文件分析 - BinaryAI风格模仿</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">BinaryAI 风格模仿</div>
+        <div class="task-bar">任务列表 (0)</div>
+    </header>
+
+    <main>
+        <section class="upload-area">
+            <div class="upload-card">
+                <h2>主文件</h2>
+                <div class="drop-zone" id="mainFileZone">
+                    <p>点击或拖拽至此区域上传</p>
+                    <p class="hint">支持ELF、PE、Mach-O等类型的二进制文件</p>
+                    <p class="hint">文件大小不超过20M</p>
+                </div>
+            </div>
+            <div class="upload-card">
+                <h2>比对内容</h2>
+                <div class="drop-zone" id="compareFileZone">
+                    <p>点击或拖拽至此区域上传</p>
+                    <p class="hint">支持ELF、PE、Mach-O等类型的二进制文件</p>
+                    <p class="hint">文件大小不超过20M</p>
+                </div>
+            </div>
+        </section>
+        <section class="info-footer">
+            <p>Copyright © 2026 模仿项目. 请勿上传个人信息。</p>
+            <!-- 实际项目中应替换为真实协议链接 -->
+            <p>如您提交上述信息，则视为您同意本<a href="#">软件许可及服务协议</a>和<a href="#">隐私保护协议</a>。</p>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
